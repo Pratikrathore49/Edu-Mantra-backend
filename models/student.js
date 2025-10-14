@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
+import { createHashedPassword } from "../services/bcryptFeat.js";
 
 const studentSchema = mongoose.Schema(
   {
@@ -23,10 +24,14 @@ const studentSchema = mongoose.Schema(
     mobile: {
       type: String,
       required: true,
-      length:10,
+      length: 10,
     },
     password: {
       type: String,
+      required: true,
+    },
+    date_of_birth: {
+      type: Date,
       required: true,
     },
     role: {
@@ -34,17 +39,30 @@ const studentSchema = mongoose.Schema(
       enum: ["student", "teacher"],
       default: "student",
     },
-    gender: {
-      type: String,
-      enum: ["male", "female", "others"],
-    },
+
     profile: {
       type: String,
       default: "",
     },
-    DateofBirth: {
-      type: Date,
-      required: true,
+
+    address: {
+      type: String,
+    },
+    year_of_graduation: {
+      type: String,
+    },
+    department: {
+      type: String,
+    },
+    course_name: {
+      type: String,
+    },
+    enrollment_number: {
+      type: String,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "others"],
     },
   },
   { timestamps: true }
@@ -52,13 +70,12 @@ const studentSchema = mongoose.Schema(
 
 studentSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  const salt = await bcrypt.genSalt(Number(process.env.SALT));
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await createHashedPassword(this.password);
   next();
 });
 
-studentSchema.methods.comparePassword =  async function(enteredPassword){
-    return await bcrypt.compare(enteredPassword,this.password);
-}
+// studentSchema.methods.comparePassword = async function (enteredPassword) {
+//   return await bcrypt.compare(enteredPassword, this.password);
+// };
 
 export default mongoose.model("Student", studentSchema);

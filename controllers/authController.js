@@ -1,5 +1,7 @@
 import Student from "../models/student.js";
+import Teacher from "../models/teacherModel.js";
 import { ApiResponse } from "../services/apiResponse.js";
+import { comparePassword } from "../services/bcryptFeat.js";
 import { makeToken } from "../services/JWTFeat.js";
 
 export const studentRegister = async (req, res) => {
@@ -10,8 +12,13 @@ export const studentRegister = async (req, res) => {
       email,
       mobile,
       password,
+      date_of_birth,
       gender,
-      DateofBirth,
+      enrollment_number,
+      department,
+      course_name,
+      year_of_graduation,
+      address,
     } = req.body;
     if (
       !first_name ||
@@ -19,11 +26,11 @@ export const studentRegister = async (req, res) => {
       !email ||
       !mobile ||
       !password ||
-      !DateofBirth
+      !date_of_birth
     ) {
       return res
         .status(400)
-        .json(new ApiResponse(false, "All fields are required", null));
+        .json(new ApiResponse(false, "Provide all required fields", null));
     }
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {
@@ -43,8 +50,13 @@ export const studentRegister = async (req, res) => {
       email,
       mobile,
       password,
+      date_of_birth,
       gender,
-      DateofBirth,
+      enrollment_number,
+      department,
+      course_name,
+      year_of_graduation,
+      address,
     });
     if (!student)
       return res
@@ -81,7 +93,7 @@ export const studentLogin = async (req, res) => {
       return res
         .status(400)
         .json(new ApiResponse(false, "Email or Password is incorrect", null));
-    const isMatch = await student.comparePassword(password);
+    const isMatch = await comparePassword(password, student.password);
     if (!isMatch)
       return res
         .status(400)
@@ -101,6 +113,102 @@ export const studentLogin = async (req, res) => {
         new ApiResponse(true, "Student Logged in successfully", studentObj)
       );
   } catch (error) {
-    return res.status(500).json(new ApiResponse(false, error.message || "Internal Server Error", null));
+    return res
+      .status(500)
+      .json(
+        new ApiResponse(false, error.message || "Internal Server Error", null)
+      );
+  }
+};
+
+export const loginTeacher = async (req, res) => {
+  try {
+    let { email, password } = req.body;
+
+    let teacher = await Teacher.findOne({ email });
+    if (!teacher)
+      return res.status(404).json({ message: "Invalid email or password" });
+    let isMatch = await comparePassword(password, teacher.password);
+
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid email or password" });
+    let teacherObj = teacher.toObject();
+    delete teacherObj.password;
+
+    const token = await makeToken(teacherObj);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, teacherObj, `Teacher Login Successfuly`));
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(false, null, error.message));
+  }
+};
+
+export const registerTeacher = async (req, res) => {
+  try {
+    let {
+      first_name,
+      last_name,
+      email,
+      password,
+      mobile,
+      profile,
+      teacher_id,
+      address,
+      gender,
+      department,
+    } = req.body;
+
+    if (
+      !first_name ||
+      !last_name ||
+      !email ||
+      !mobile ||
+      !password ||
+      !teacher_id
+    ) {
+      return res
+        .status(400)
+        .json(new ApiResponse(false, "Provide all required fields", null));
+    }
+    const isExist = await Teacher.findOne({ $or: [{ email }, { teacher_id }] });
+    if (isExist)
+      return res
+        .status(400)
+        .json(new ApiResponse(false, "Teacher already registered", null));
+
+    let teacher = await Teacher.create({
+      first_name,
+      last_name,
+      email,
+      password,
+      mobile,
+      profile,
+      teacher_id,
+      address,
+      gender,
+      department,
+    });
+    if (!teacher)
+      return res
+        .status(400)
+        .json(new ApiResponse(false, "Failed to register teacher", null));
+
+    const teacherObj = teacher.toObject();
+    delete teacherObj.password;
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(true, "Teacher registered successfully", teacherObj)
+      );
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
