@@ -1,6 +1,7 @@
 import express from 'express'
 import { loginTeacher, registerTeacher, studentLogin, studentRegister } from '../../controllers/authController.js'
-import verifyCaptcha from '../../middleware/vefifyCaptcha.js'
+import { verifyCaptcha } from '../../middleware/middleware.js'
+
 const router = express.Router()
 
 router.post("/student/register",studentRegister)

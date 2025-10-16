@@ -1,5 +1,5 @@
-const Questions = require("../model/questionModel");
-const ApiResponse = require("../utils/ApiResponse");
+import Questions from '../models/questionModel.js'
+import { ApiResponse } from '../services/apiResponse.js';
 
 const questionAdd = async (req, res) => {
    
@@ -123,7 +123,7 @@ const questionGetById = async (req, res) => {
   }
 };
 
-module.exports = {
+export  {
   questionAdd,
   questionGetAll,
   questionDelete,
