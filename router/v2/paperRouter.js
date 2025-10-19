@@ -1,5 +1,6 @@
-const express = require("express")
-const { getPaper, getAllPaper } = require("../../controller/paperController")
+import express from 'express'
+import { getAllPaper, getPaper } from '../../controllers/paperController.js'
+
 
 const router = express.Router()
 
@@ -10,4 +11,4 @@ router.get("/:id",getPaper)
 
 
 
-module.exports = router
+export default router

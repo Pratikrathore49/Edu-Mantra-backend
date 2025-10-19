@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
     } else if (req.originalUrl.includes("teacher")) {
       folder = "teacher";
     }
-    const uploadPath = path.join(process.cwd(), `../uploads/${folder}`);
+    const uploadPath = path.join(process.cwd(), `uploads/${folder}`);
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 
 const uploads = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  // limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 export { uploads };

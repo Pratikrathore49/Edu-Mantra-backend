@@ -3,7 +3,7 @@ const { questionGetById, questionGetAll } = require("../../controller/questionCo
 
 const router = express.Router()
 
-router.get("/",questionGetAll)
+
 router.get('/:id',questionGetById)
 
 

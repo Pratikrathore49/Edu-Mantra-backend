@@ -17,7 +17,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.static(path.join(process.cwd(),"uploads")));
+app.use('/uploads',express.static(path.join(process.cwd(),"uploads")));
 // app.use('/uploads',express.static('uploads'))
 
 

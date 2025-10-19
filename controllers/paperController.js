@@ -1,28 +1,31 @@
-const ApiResponse = require("../utils/ApiResponse");
-const paperModel = require("../model/paperModel");
+
+import { ApiResponse } from "../services/apiResponse.js";
+import paperModel from "../models/papersModel.js";
+
 const addPaper = async (req, res) => {
   try {
-    const { name, question, exam, figure, note, duration, isPaid } = req.body;
+    const { name, question, exam, subject, totalMarks, note, duration, isPaid } = req.body;
 
     const paper = await paperModel.create({
       name,
       question,
       exam,
-      figure,
+      totalMarks,
       note,
+      subject,
       duration,
       isPaid,
     });
     if (!paper)
       return res
         .status(400)
-        .json(new ApiResponse(false, null, "Paper Not Created"));
+        .json(new ApiResponse(false, "Paper Not Created", null));
 
     res
       .status(200)
-      .json(new ApiResponse(true, paper, "Paper Successfully Created"));
+      .json(new ApiResponse(true, "Paper Successfully Created", paper));
   } catch (error) {
-    return res.status(500).json(new ApiResponse(false, null, error.message));
+    return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
 
@@ -32,13 +35,13 @@ const getPaper = async (req, res) => {
     if (!paper)
       return res
         .status(404)
-        .json(new ApiResponse(false, null, "Paper not found"));
+        .json(new ApiResponse(false, "Paper not found", null));
 
     res
       .status(200)
-      .json(new ApiResponse(true, paper, "Paper fetched Successfully "));
+      .json(new ApiResponse(true, "Paper fetched Successfully ", paper));
   } catch (error) {
-    return res.status(500).json(new ApiResponse(false, null, error.message));
+    return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
 
@@ -63,24 +66,18 @@ const getAllPaper = async (req, res) => {
     delete query.sort;
     delete query.page;
 
-    const papers = await paperModel
-      .find(query)
-      .select(select)
-      .skip(skip)
-      .limit(limit)
-      .sort(sort);
-
+    const papers = await paperModel.find(query).select(select).skip(skip).limit(limit).sort(sort);
     if (!papers)
       return res
         .status(404)
-        .json(new ApiResponse(false, null, "Paper not found"));
+        .json(new ApiResponse(false, "Paper not found", null));
     const total = await paperModel.countDocuments(query);
     res.set({ "X-Total-Count": total });
     res
       .status(200)
-      .json(new ApiResponse(true, papers, "Papers fetched Successfully "));
+      .json(new ApiResponse(true, "Papers fetched Successfully ", papers));
   } catch (error) {
-    return res.status(500).json(new ApiResponse(false, null, error.message));
+    return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
 
@@ -90,13 +87,13 @@ const deletePaper = async (req, res) => {
     if (!paper)
       return res
         .status(404)
-        .json(new ApiResponse(false, null, "Paper not deleted found"));
+        .json(new ApiResponse(false, "Paper not deleted found", null));
 
     res
       .status(200)
-      .json(new ApiResponse(true, paper, "Paper Deleted Successfully "));
+      .json(new ApiResponse(true, "Paper Deleted Successfully ", paper));
   } catch (error) {
-    return res.status(500).json(new ApiResponse(false, null, error.message));
+    return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
 
@@ -111,14 +108,14 @@ const updatePaper = async (req, res) => {
     if (!paper)
       return res
         .status(404)
-        .json(new ApiResponse(false, null, "Paper Not Update"));
+        .json(new ApiResponse(false, "Paper Not Update", null));
 
     res
       .status(200)
-      .json(new ApiResponse(true, paper, "Paper Updated Successfully "));
+      .json(new ApiResponse(true, "Paper Updated Successfully ", paper));
   } catch (error) {
-    return res.status(500).json(new ApiResponse(false, null, error.message));
+    return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
 
-module.exports = { updatePaper, deletePaper, getAllPaper, getPaper, addPaper };
+export { updatePaper, deletePaper, getAllPaper, getPaper, addPaper };

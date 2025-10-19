@@ -1,24 +1,17 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
 const paperSchema = new Schema(
   {
     name: { type: String, required: true, lowercase: true, trim: true },
-    question: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Questions",
-      },
-    ],
-    exam: { type: String, trim: true },
-    figure: { type: String, trim: true },
-    note: { type: String, trim: true },
     duration: { type: Number, required: true },
-    isPaid: {
-      type: Boolean,
-      default: false,
-    },
+    question: [{type: Schema.Types.ObjectId,ref: "Questions",}],
+    subject: { type: String, trim: true ,required:true},
+    totalMarks: { type: Number, default: 1,required:true },
+    examType: { type: String, trim: true },
+    note: { type: String, trim: true },
+    isPaid: { type: Boolean,default: false,},
   },
   { timestamps: true }
 );
 
-module.exports = model("Paper", paperSchema);
+export default model("Paper", paperSchema);

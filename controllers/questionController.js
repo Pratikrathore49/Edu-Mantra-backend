@@ -1,9 +1,12 @@
-import Questions from '../models/questionModel.js'
-import { ApiResponse } from '../services/apiResponse.js';
+import Questions from "../models/questionModel.js";
+import { ApiResponse } from "../services/apiResponse.js";
 
 const questionAdd = async (req, res) => {
-   
-  let figurePath = req.file?`http://localhost:8080/uploads/figure/${req.file.filename}`:null;
+  let figurePath = req.file
+    ? `${req.protocol}://${req.get("host")}/uploads/question/${
+        req.file.filename
+      }`
+    : null;
   try {
     const {
       question,
@@ -27,46 +30,47 @@ const questionAdd = async (req, res) => {
       option4,
       answer,
       note,
-      figure:figurePath,
+      figure: figurePath,
       subject,
       level,
     });
     res
       .status(200)
       .json(
-        new ApiResponse(true, added, "Question Successfully Added In Data Base")
+        new ApiResponse(true, "Question Successfully Added In Data Base", added)
       );
   } catch (error) {
-    res.status(500).json(new ApiResponse(false, null, error));
+    res.status(500).json(new ApiResponse(false, error, null));
   }
 };
 
 const questionGetAll = async (req, res) => {
   let query = req.query;
 
-  const limit = query.limit || 100;
-  const skip = query.skip || 0;
+  const limit = Number(query.limit) || 10;
+  const skip = parseInt(query.skip) || 0;
   const select = query.select ? query.select.split(",").join(" ") : null;
-  
+
   let filterQuery = { ...query };
   ["skip", "limit", "select", "sort"].forEach((key) => {
-     delete filterQuery[key];
+    delete filterQuery[key];
   });
-  
+  const totalQuestions = await Questions.countDocuments();
   try {
     const allQuestions = await Questions.find(filterQuery)
       .select(select)
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      
 
-      res.set("x-count",allQuestions.length)
-    res
-      .status(200)
-      .json(
-        new ApiResponse(true, allQuestions, "Question Successfully Fetched")
-      );
+    res.status(200).json(
+      new ApiResponse(true, "Question Successfully Fetched", {
+        questions: allQuestions,
+        totalPages: Math.ceil(totalQuestions / limit),
+      })
+    );
   } catch (error) {
-    res.status(500).json(new ApiResponse(false, null, error));
+    res.status(500).json(new ApiResponse(false, error, null));
   }
 };
 
@@ -76,12 +80,12 @@ const questionDelete = async (req, res) => {
     if (!deleted)
       return res
         .status(404)
-        .json(new ApiResponse(false, null, "Question not found"));
+        .json(new ApiResponse(false, "Question not found", null));
     res
       .status(200)
-      .json(new ApiResponse(true, deleted, "Question Deleted Successfully"));
+      .json(new ApiResponse(true, "Question Deleted Successfully", deleted));
   } catch (error) {
-    res.status(500).json(new ApiResponse(false, null, error));
+    res.status(500).json(new ApiResponse(false, error, null));
   }
 };
 
@@ -98,12 +102,12 @@ const questionUpdated = async (req, res) => {
     if (!updated)
       return res
         .status(404)
-        .json(new ApiResponse(false, null, "Question Not Update found"));
+        .json(new ApiResponse(false, "Question Not Update found", null));
     res
       .status(200)
-      .json(new ApiResponse(true, updated, "Question Updated Successfully"));
+      .json(new ApiResponse(true, "Question Updated Successfully", updated));
   } catch (error) {
-    res.status(500).json(new ApiResponse(false, null, error.message));
+    res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
 
@@ -114,16 +118,16 @@ const questionGetById = async (req, res) => {
     if (!question)
       return res
         .status(404)
-        .json(new ApiResponse(false, null, "Question Not Update found"));
+        .json(new ApiResponse(false, "Question Not Update found", null));
     res
       .status(200)
-      .json(new ApiResponse(true, question, "Question Updated Successfully"));
+      .json(new ApiResponse(true, "Question Updated Successfully", question));
   } catch (error) {
-    res.status(500).json(new ApiResponse(false, null, error.message));
+    res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
 
-export  {
+export {
   questionAdd,
   questionGetAll,
   questionDelete,
