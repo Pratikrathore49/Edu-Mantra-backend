@@ -29,9 +29,9 @@ const addPaper = async (req, res) => {
   }
 };
 
-const getPaper = async (req, res) => {
+const getPaperByID = async (req, res) => {
   try {
-    const paper = await paperModel.findOne({ _id: req.params.id });
+    const paper = await paperModel.findById({ _id: req.params.id }).populate("question");
     if (!paper)
       return res
         .status(404)
@@ -118,4 +118,4 @@ const updatePaper = async (req, res) => {
   }
 };
 
-export { updatePaper, deletePaper, getAllPaper, getPaper, addPaper };
+export { updatePaper, deletePaper, getAllPaper,getPaperByID, addPaper };

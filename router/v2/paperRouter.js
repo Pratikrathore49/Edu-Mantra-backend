@@ -1,12 +1,12 @@
 import express from 'express'
-import { getAllPaper, getPaper } from '../../controllers/paperController.js'
+import { getAllPaper, getPaperByID } from '../../controllers/paperController.js'
 
 
 const router = express.Router()
 
 
 router.get("/",getAllPaper)
-router.get("/:id",getPaper)
+router.get("/:id",getPaperByID)
 
 
 

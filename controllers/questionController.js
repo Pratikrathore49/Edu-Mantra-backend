@@ -92,7 +92,6 @@ const questionDelete = async (req, res) => {
 const questionUpdated = async (req, res) => {
   try {
     const updatedQuestion = req.body;
-    console.log("usp", updatedQuestion);
     const updated = await Questions.findByIdAndUpdate(
       req.params.id,
       { $set: updatedQuestion },
