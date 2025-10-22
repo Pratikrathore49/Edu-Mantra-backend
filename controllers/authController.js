@@ -99,11 +99,16 @@ export const studentLogin = async (req, res) => {
         .status(400)
         .json(new ApiResponse(false, "Email or Password is incorrect", null));
 
-    const token = await makeToken({ _id: student._id, role: student.role });
+    const token = await makeToken({
+      _id: student._id,
+      role: student.role,
+      first_name: student.first_name,
+    });
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "Lax",
+      maxAge: 24 * 7 * 60 * 60 * 1000,
     });
     const studentObj = student.toObject();
     delete studentObj.password;
@@ -212,3 +217,17 @@ export const registerTeacher = async (req, res) => {
     return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };
+
+export const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    });
+    return res.status(200).json(new ApiResponse(true, "User Logged Out Succefully", null));
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(false, error.message, null));
+  }
+};
+
