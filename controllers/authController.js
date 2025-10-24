@@ -132,11 +132,11 @@ export const loginTeacher = async (req, res) => {
 
     let teacher = await Teacher.findOne({ email });
     if (!teacher)
-      return res.status(404).json({ message: "Invalid email or password" });
+      return res.status(400).json(new ApiResponse(false,"Invalid Password or Email",null))
     let isMatch = await comparePassword(password, teacher.password);
 
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json(new ApiResponse(false,"Invalid Password or Email",null))
     let teacherObj = teacher.toObject();
     delete teacherObj.password;
 
@@ -149,9 +149,9 @@ export const loginTeacher = async (req, res) => {
     });
     return res
       .status(200)
-      .json(new ApiResponse(200, teacherObj, `Teacher Login Successfuly`));
+      .json(new ApiResponse(200,  `Teacher Login Successfuly`, teacherObj));
   } catch (error) {
-    return res.status(500).json(new ApiResponse(false, null, error.message));
+    return res.status(500).json(new ApiResponse(false, error.message,null));
   }
 };
 
