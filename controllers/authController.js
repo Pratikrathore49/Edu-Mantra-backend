@@ -102,7 +102,7 @@ export const studentLogin = async (req, res) => {
     const token = await makeToken({
       _id: student._id,
       role: student.role,
-      first_name: student.first_name,
+      
     });
     res.cookie("token", token, {
       httpOnly: true,
@@ -140,7 +140,8 @@ export const loginTeacher = async (req, res) => {
     let teacherObj = teacher.toObject();
     delete teacherObj.password;
 
-    const token = await makeToken(teacherObj);
+    const token = await makeToken({  _id: teacher._id,
+      role: teacher.role,});
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
