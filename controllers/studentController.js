@@ -1,5 +1,10 @@
+import { hash } from "bcrypt";
 import Student from "../models/student.js";
 import { ApiResponse } from "../services/apiResponse.js";
+import {
+  comparePassword,
+  createHashedPassword,
+} from "../services/bcryptFeat.js";
 
 export const getStudentProfile = async (req, res) => {
   try {
@@ -66,27 +71,36 @@ export const updateStudentDetails = async (req, res) => {
 export const changeStudentPassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
+    console.log("oldPassword", oldPassword, "newPassword", newPassword);
     if (!oldPassword || !newPassword)
       return res
         .status(400)
         .json(new ApiResponse(false, "Enter both old and new passwords", null));
+
     const user = await Student.findById(req.user._id);
     if (!user)
       return res
         .status(404)
         .json(new ApiResponse(false, "Student Not Found", null));
+
     const isMatch = await comparePassword(oldPassword, user.password);
+    console.log("isMathch", isMatch);
     if (!isMatch)
       return res
         .status(401)
         .json(new ApiResponse(false, "Enter Correct Password", null));
 
-       const hashed = await createHashedPassword(newPassword);
-       user.password = hashed;
-       await user.save(); 
+    // const hashed = await createHashedPassword(newPassword);
+    user.password = newPassword;
+    await user.save();
 
-        return res(200).json(new ApiResponse(true,'Student Password Changed successfully',null))
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(true, "Student Password Changed successfully", null)
+      );
   } catch (error) {
+    console.log("error");
     return res.status(500).json(new ApiResponse(false, error.message, null));
   }
 };

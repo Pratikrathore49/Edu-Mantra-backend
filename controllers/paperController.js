@@ -1,10 +1,18 @@
-
 import { ApiResponse } from "../services/apiResponse.js";
 import paperModel from "../models/papersModel.js";
 
 const addPaper = async (req, res) => {
   try {
-    const { name, question, exam, subject, totalMarks, note, duration, isPaid } = req.body;
+    const {
+      name,
+      question,
+      exam,
+      subject,
+      totalMarks,
+      note,
+      duration,
+      isPaid,
+    } = req.body;
 
     const paper = await paperModel.create({
       name,
@@ -31,7 +39,9 @@ const addPaper = async (req, res) => {
 
 const getPaperByID = async (req, res) => {
   try {
-    const paper = await paperModel.findById({ _id: req.params.id }).populate("question");
+    const paper = await paperModel
+      .findById({ _id: req.params.id })
+      .populate("question");
     if (!paper)
       return res
         .status(404)
@@ -65,17 +75,28 @@ const getAllPaper = async (req, res) => {
     delete query.select;
     delete query.sort;
     delete query.page;
-
-    const papers = await paperModel.find(query).select(select).skip(skip).limit(limit).sort(sort);
+    const totalPapers = await paperModel.countDocuments();
+    const papers = await paperModel
+      .find(query)
+      .select(select)
+      .skip(skip)
+      .limit(limit)
+      .sort(sort);
     if (!papers)
       return res
         .status(404)
         .json(new ApiResponse(false, "Paper not found", null));
     const total = await paperModel.countDocuments(query);
     res.set({ "X-Total-Count": total });
+
     res
       .status(200)
-      .json(new ApiResponse(true, "Papers fetched Successfully ", papers));
+      .json(
+        new ApiResponse(true, "Papers fetched Successfully ", {
+          papers: papers,
+          totalPages: Math.ceil(totalPapers / limit),
+        })
+      );
   } catch (error) {
     return res.status(500).json(new ApiResponse(false, error.message, null));
   }
@@ -118,4 +139,4 @@ const updatePaper = async (req, res) => {
   }
 };
 
-export { updatePaper, deletePaper, getAllPaper,getPaperByID, addPaper };
+export { updatePaper, deletePaper, getAllPaper, getPaperByID, addPaper };
