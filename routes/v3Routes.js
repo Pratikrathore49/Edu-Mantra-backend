@@ -6,6 +6,6 @@ import teacherRouter from '../router/v3/teacherRouter.js'
 
 router.use('/question',questionRouter)
 router.use('/paper',paperRouter)
-router.use('teacher',teacherRouter)
+router.use('/teacher',teacherRouter)
 
 export default router;

@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
-import path from 'path';
+import Razorpay from "razorpay";
+import path from "path";
 import cookieParser from "cookie-parser";
 dotenv.config();
 import cors from "cors";
-
 import express, { urlencoded } from "express";
 import connectDB from "./DB/databaseConnection.js";
 import apiRoutes from "./routes/apiRoutes.js";
@@ -12,7 +12,6 @@ const app = express();
 const PORT = process.env.PORT;
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
-
 app.use(cookieParser());
 app.use(
   cors({
@@ -20,9 +19,9 @@ app.use(
     credentials: true,
   })
 );
-app.use('/uploads',express.static(path.join(process.cwd(),"uploads")));
-// app.use('/uploads',express.static('uploads'))
 
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+// app.use('/uploads',express.static('uploads'))
 
 app.use("/api", apiRoutes);
 

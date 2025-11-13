@@ -1,9 +1,9 @@
-import TeacherModel from '../models/teacherModel.js'
-
-
-
+import TeacherModel from "../models/teacherModel.js";
+import { ApiResponse } from "../services/apiResponse.js";
+import { comparePassword } from "../services/bcryptFeat.js";
 
 export const getTeacherProfile = async (req, res) => {
+  console.log("running");
   try {
     const user = await TeacherModel.findById(req.user._id).select("-password");
     if (!user)
@@ -18,34 +18,96 @@ export const getTeacherProfile = async (req, res) => {
   }
 };
 
-// const updateTeacherDetails = async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     let { name, mobile, email } = req.body;
+export const updateTeacherDetails = async (req, res) => {
+  console.log("running32");
+  try {
+    let {
+      first_name,
+      last_name,
+      mobile,
+      email,
+      date_of_birth,
+      gender,
+      teacher_id,
+      department,
+      years_of_experience,
+      address,
+    } = req.body;
 
-//     let checkTeacher = await Teacher.findOne({ _id: id });
-//     if (!checkTeacher) {
-//       return res.status(404).json({ message: "Someting went wrong" });
-//     }
+    let updatedTeacher = await TeacherModel.findByIdAndUpdate(
+      req.user._id,
+      {
+        first_name,
+        last_name,
+        mobile,
+        email,
+        date_of_birth,
+        gender,
+        teacher_id,
+        department,
+        years_of_experience,
+        address,
+      },
+      { new: true, runValidators: true }
+    );
 
-//     let updatedTeacher = await Teacher.findByIdAndUpdate(
-//       id,
-//       { name, mobile },
-//       { new: true, runValidators: true }
-//     );
+    if (!updatedTeacher) {
+      return res
+        .status(404)
+        .json(new ApiResponse(false, "User Not Updated", null));
+    }
 
-//     res
-//       .status(201)
-//       .json({ message: "Update Teacher deatil", update: updatedTeacher });
-//   } catch (err) {
-//     console.error({ Route: "Update err", message: err.message });
-//     if (err.name === "CastError") {
-//       return res.status(400).json({ message: "Invalid ID format" });
-//     }
-//     res.status(500).json({ Route: "Update err", message: err.message });
-//   }
-// };
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          true,
+          "Teacher Details Updated Successfully",
+          updatedTeacher
+        )
+      );
+  } catch (error) {
+    res.status(500).json(new ApiResponse(false, error.message, null));
+  }
+};
 
+
+export const changeTeacherPassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    console.log("oldPassword", oldPassword, "newPassword", newPassword);
+    if (!oldPassword || !newPassword)
+      return res
+        .status(400)
+        .json(new ApiResponse(false, "Enter both old and new passwords", null));
+
+    const user = await TeacherModel.findById(req.user._id);
+    if (!user)
+      return res
+        .status(404)
+        .json(new ApiResponse(false, "User Not Found", null));
+
+    const isMatch = await comparePassword(oldPassword, user.password);
+    console.log("isMathch", isMatch);
+    if (!isMatch)
+      return res
+        .status(401)
+        .json(new ApiResponse(false, "Enter Correct Password", null));
+
+    // const hashed = await createHashedPassword(newPassword);
+    user.password = newPassword;
+    await user.save();
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(true, "Student Password Changed successfully", null)
+      );
+  } catch (error) {
+    console.log("error");
+    return res.status(500).json(new ApiResponse(false, error.message, null));
+  }
+}
 
 // //Get details by id Controller
 // const getTeacherDetails = async (req, res) => {
@@ -92,4 +154,3 @@ export const getTeacherProfile = async (req, res) => {
 //     res.status(500).json({ Route: "Delete err", message: err.message });
 //   }
 // };
-

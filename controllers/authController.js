@@ -101,6 +101,7 @@ export const studentLogin = async (req, res) => {
 
     const token = await makeToken({
       _id: student._id,
+      first_name:student.first_name,
       role: student.role,
       
     });

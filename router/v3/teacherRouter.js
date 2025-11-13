@@ -1,5 +1,5 @@
 import express from 'express'
-import { getTeacherProfile } from '../../controllers/teacherController.js'
+import { changeTeacherPassword, getTeacherProfile, updateTeacherDetails } from '../../controllers/teacherController.js'
 import { isTeacher } from '../../middleware/middleware.js'
 
 
@@ -7,10 +7,11 @@ import { isTeacher } from '../../middleware/middleware.js'
 const router = express.Router()
 
 
-router.get('/teachDetails',isTeacher,getTeacherProfile)
+router.get('/details',isTeacher,getTeacherProfile)
 // router.get("/:id", getTeacherDetails);
-// router.get("/update/:id",updateTeacherDetails)
+router.patch("/update",isTeacher,updateTeacherDetails)
 // router.use("/delete/:id", deleteTeacherInfo);
+router.patch('/change-pass',isTeacher, changeTeacherPassword)
 
 
 export default router

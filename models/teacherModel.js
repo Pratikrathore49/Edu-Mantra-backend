@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import  { createHashedPassword } from "../services/bcryptFeat.js"
+import { createHashedPassword } from "../services/bcryptFeat.js";
 
 const teacherSchema = new mongoose.Schema(
   {
@@ -13,7 +13,7 @@ const teacherSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-     email: {
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -24,7 +24,7 @@ const teacherSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-     teacher_id: {
+    teacher_id: {
       type: String,
       unique: true,
     },
@@ -34,23 +34,28 @@ const teacherSchema = new mongoose.Schema(
     },
     profile: {
       type: String,
-      default: "Image",
+      default:'',
     },
     role: {
       type: String,
       default: "teacher",
     },
-      address: {
+    address: {
       type: String,
     },
-     gender: {
+    gender: {
       type: String,
       enum: ["male", "female", "others"],
+    },
+    date_of_birth: {
+      type: String,
+    },
+    years_of_experience:{
+      type:String,
     },
     department: {
       type: String,
     },
-   
   },
   { timestamps: true }
 );
