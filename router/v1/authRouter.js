@@ -5,8 +5,8 @@ import { verifyCaptcha } from '../../middleware/middleware.js'
 const router = express.Router()
 
 router.post("/student/register",studentRegister)
-router.post("/student/login",verifyCaptcha,studentLogin)
+router.post("/student/login",studentLogin)
 router.post('/teacher/register',registerTeacher)
-router.post("/teacher/login",verifyCaptcha, loginTeacher)
+router.post("/teacher/login", loginTeacher) //verifyCaptcha,
 
 export default router
