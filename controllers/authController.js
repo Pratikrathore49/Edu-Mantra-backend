@@ -107,8 +107,12 @@ export const studentLogin = async (req, res) => {
     });
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "Lax",
+         // ================local==============
+      // secure: false,  
+      // sameSite: "Lax", 
+      // ================production==============
+      secure: true,  
+      sameSite: "None", 
       maxAge: 24 * 7 * 60 * 60 * 1000,
     });
     const studentObj = student.toObject();
