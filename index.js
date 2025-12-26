@@ -15,7 +15,7 @@ app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin:"*",
+    origin:"https://edu-mantra-frontend.vercel.app",
     credentials: true,
   })
 );
