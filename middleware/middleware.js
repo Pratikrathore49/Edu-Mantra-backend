@@ -79,7 +79,7 @@ const verifyCaptcha = async (req, res, next) => {
     console.error("Captcha verification error", error);
     res
       .status(500)
-      .json(new ApiResponse(false, "Captcha verification failed", null));
+      .json(new ApiResponse(false,error.message, null));
   }
 };
 
