@@ -72,7 +72,7 @@ const verifyCaptcha = async (req, res, next) => {
     if (!resData.data.success) {
       return res
         .status(400)
-        .json(new ApiResponse(false, {a:resData.data}, null));
+        .json(new ApiResponse(false,'captcha varification failed', null));
     }
     next();
   } catch (error) {
