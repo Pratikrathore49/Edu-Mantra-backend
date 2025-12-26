@@ -145,8 +145,13 @@ export const loginTeacher = async (req, res) => {
       role: teacher.role,});
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "Lax",
+
+      // ================local==============
+      // secure: false,  
+      // sameSite: "Lax", 
+      // ================production==============
+      secure: true,  
+      sameSite: "None", 
       maxAge: 24 * 60 * 60 * 1000,
     });
     return res
